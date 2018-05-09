@@ -65,7 +65,7 @@ allCounts <-  merge(allCounts,mb_ivs_2,by.x=1,by.y=0,all=TRUE)
 ##
 rownames(allCounts) <-  allCounts[,1]
 allCounts <-  allCounts[,-1]
-write.csv(allCounts,file='allCounts.csv')
+write.csv(allCounts,file='allCounts.csv') #--------continue running from here
 
 ##
 ## Making the meta data
@@ -75,7 +75,9 @@ sData <-  data.frame(
                    'mb_wt_1','mb_wt_2','mb_ivs_1','mb_ivs_2'),
   'genotype' = rep(c('wt','wt','ivs','ivs'),2),
   'region' = c(rep('fb',4),rep('mb',4)),
-  'div' = rep(60,8))
+  'div' = rep(60,8),
+  'genoReg' = c(rep('fbWt',2), rep ('fbIvs', 2), rep ('mbWt', 2), rep ('mbIVS', 2))
+  )
 
 allpData <-  data.frame(
   'sampleName' = sub("-.*","",colnames(allCounts)),
@@ -98,14 +100,14 @@ allCounts[is.na(allCounts)] = 0
 
 ## filtering out cells that do not have
 ## at least 100 reads.
-validCells <-  which(colSums(allCounts) > 100)
+validCells <-  which(Matrix::colSums(allCounts) > 100)
 length(validCells)
 ##12793 cells total.
 filteredCounts <-  as(as.matrix(allCounts[,names(validCells)]),'sparseMatrix')
 
 ## filtering out cells that do not fall within 2 sd of the
 ## mean number of reads
-total_mRNAs <-  colSums(filteredCounts)
+total_mRNAs <-  Matrix::colSums(filteredCounts)
 upper_bound <- 10^(mean(log10(total_mRNAs))+
                      2*sd(log10(total_mRNAs)))
 lower_bound <- 10^(mean(log10(total_mRNAs)) -
@@ -123,14 +125,26 @@ genesfData[,'gene_short_name'] = rownames(filteredCounts)
 
 numCellExpressed <-  Matrix::rowSums(filteredCounts > 3)
 genesfData[,'numExpressed'] <-  numCellExpressed
-cellsPerGene <-  rowSums(filteredCounts > 3)
+cellsPerGene <-  Matrix::rowSums(filteredCounts > 3)
 expressedGenes <-  names(which(cellsPerGene > 10))
 length(expressedGenes)
+#3648 genes expressed
 
 ##
 ## Loading into Monocle datframe
 ##
 library(monocle)
+
+##check that dimensions of the 3 input files are correct
+dim(filteredCounts[expressedGenes,])
+## 3648 rows 12248 columns
+dim(allpData[colnames(filteredCounts),])
+#should have tye same number of rows as Counts has.
+#columns = 12248
+dim(genesfData[expressedGenes,])
+#should have the same number of rows as Counts has.
+#rows =3648
+
 HSMM1 <-  newCellDataSet(
   filteredCounts[expressedGenes,],
   phenoData = new("AnnotatedDataFrame",data=allpData[colnames(filteredCounts),]),
@@ -140,4 +154,16 @@ HSMM1 <-  newCellDataSet(
 HSMM1 <- detectGenes(HSMM1, min_expr = 4)
 HSMM1 <- estimateSizeFactors(HSMM1)
 HSMM1 <- estimateDispersions(HSMM1)
+
+qplot(total_mRNAs[rownames(pData(HSMM1))], data=pData(HSMM1), color=genotype,geom="density")+
+  geom_vline(xintercept=lower_bound) +
+  geom_vline(xintercept=upper_bound)
+
+qplot(total_mRNAs[rownames(pData(HSMM1))], data=pData(HSMM1), color=genoReg,geom="density")+
+  geom_vline(xintercept=lower_bound) +
+  geom_vline(xintercept=upper_bound)
+
+qplot(total_mRNAs[rownames(pData(HSMM1))], data=pData(HSMM1), color=sampleName,geom="density")+
+  geom_vline(xintercept=lower_bound) +
+  geom_vline(xintercept=upper_bound)
 
