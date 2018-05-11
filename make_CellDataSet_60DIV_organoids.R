@@ -65,7 +65,7 @@ allCounts <-  merge(allCounts,mb_ivs_2,by.x=1,by.y=0,all=TRUE)
 ##
 rownames(allCounts) <-  allCounts[,1]
 allCounts <-  allCounts[,-1]
-write.csv(allCounts,file='allCounts.csv') #--------continue running from here
+write.csv(allCounts,file='allCounts.csv')
 
 ##
 ## Making the meta data

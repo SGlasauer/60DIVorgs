@@ -91,7 +91,7 @@ dim(allpData_mb[colnames(filteredCounts_mb),])
 #columns = 6144
 dim(genesfData_mb[expressedGenes_mb,])
 #should have the same number of rows as Counts has.
-#rows =2801------------------continue running and editing here
+#rows =2801
 
 HSMM_mb_1 <-  newCellDataSet(
   filteredCounts_mb[expressedGenes_mb,],
