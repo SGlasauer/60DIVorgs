@@ -77,10 +77,17 @@ cth_mb <- addCellType(cth_mb, "RadialGlia1_mb",
 
 cth_mb <- addCellType(cth_mb, "RadialGlia2_mb",
                       classify_func = function(x) {
-                        x[NES_id_mb,] >=1})
+                        x[NES_id_mb,] >= 1})
 
-#Classify each cell in the CellDataSet according to these types---------error message!
+#Classify each cell in the CellDataSet according to these types
 HSMM_mb_1 <- classifyCells(HSMM_mb_1, cth_mb, 0.1)
+#####this gives me an error message:
+##########Error in if (type_res[cell_name] == TRUE) next_nodes <- c(next_nodes,  : 
+##########missing value where TRUE/FALSE needed
+##########In addition: Warning message:
+##########Deprecated, use tibble::rownames_to_column() instead.
+
+
 
 #check how many cells are in each class
 table(pData(HSMM_mb_1)$CellType)

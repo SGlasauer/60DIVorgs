@@ -20,13 +20,11 @@ plot_pc_variance_explained(HSMM1, return_all = F) # norm_method='log'
 #now reduce dimensions. I chose 5 based in the plot explaining variance.
 HSMM1 <- reduceDimension(HSMM1, max_components = 2, num_dim = 5,
                         reduction_method = 'tSNE', verbose = T)
-#this gave me a Warning message:
-##In doTryCatch(return(expr), name, parentenv, handler) :
-##restarting interrupted promise evaluation
 
-#to cluster the cels: requires how many clusters you want as input
+
+#to cluster the cells: requires to input how many clusters you want
 HSMM1 <- clusterCells(HSMM1, num_clusters = 15)
-##Message: Distance cutoff calculated to 4.93999
+##Message: Distance cutoff calculated to 4.933999
 
 plot_cell_clusters(HSMM1)
 

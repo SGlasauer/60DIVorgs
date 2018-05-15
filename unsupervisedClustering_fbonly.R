@@ -19,13 +19,11 @@ plot_pc_variance_explained(HSMM_fb_1, return_all = F) # norm_method='log'
 
 #now reduce dimensions. I chose 8 based in the plot explaining variance.
 HSMM_fb_1 <- reduceDimension(HSMM_fb_1, max_components = 2, num_dim = 8,
-                        reduction_method = 'tSNE', verbose = T)
-#this gave me a Warning message:
-##In doTryCatch(return(expr), name, parentenv, handler) :
-##restarting interrupted promise evaluation
+                            reduction_method = 'tSNE', verbose = T)
+
 
 #to cluster the cels: requires how many clusters you want as input
-HSMM_fb_1 <- clusterCells(HSMM_fb_1, num_clusters = 15)
+HSMM_fb_1 <- clusterCells(HSMM_fb_1, num_clusters = 10)
 ##Message: Distance cutoff calculated to 4.93999
 
 plot_cell_clusters(HSMM_fb_1)
@@ -34,5 +32,4 @@ plot_cell_clusters(HSMM_fb_1)
 plot_cell_clusters(HSMM_fb_1, color = "CellType")
 plot_cell_clusters(HSMM_fb_1, color = "genotype")
 plot_cell_clusters(HSMM_fb_1, color = "sampleName")
-
 
